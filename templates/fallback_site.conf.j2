@@ -1,0 +1,8 @@
+server {
+    listen       {{ nginx_fallback_port }};
+    server_name  {{ nginx_fallback_server_name }};
+    location / {
+        root {{ nginx_fallback_root_path }};
+        try_files $uri /fallback.html;
+    }
+}

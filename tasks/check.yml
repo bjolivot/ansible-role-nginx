@@ -1,0 +1,9 @@
+---
+
+#check variable set
+- fail: msg="Variable '{{ item }}' is not defined"
+  tags: check
+  when: item not in vars
+  with_items: 
+    - nginx_website_name
+    - nginx_website_conf

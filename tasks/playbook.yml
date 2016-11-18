@@ -1,0 +1,52 @@
+---
+
+
+- name: install nginx package
+  apt:
+    pkg: nginx
+    state: present
+  register: apt_nginx
+
+##default config for multi hosted servers
+- name: create fallback website directory
+  file: 
+    dest: "{{ nginx_fallback_root_path }}"
+    state: directory
+    
+
+- name: template fallback website conf as default
+  template:
+    src: fallback_site.conf.j2 
+    dest: /etc/nginx/sites-available/default.conf
+  when: apt-nginx.changed or nginx_force_override_default_website
+  notify: reload_nginx
+
+- name: symlink for fallback
+  file: 
+    src: /etc/nginx/sites-available/default.conf
+    dest: /etc/nginx/sites-enabled/default.conf
+    state: link
+  when: apt-nginx.changed or nginx_force_override_default_website
+  notify: reload_nginx
+
+- name: template fallback html single page
+  template:
+    src: fallback.html.j2
+    dest: "{{ nginx_fallback_root_path }}/fallback.html"
+  when: apt-nginx.changed or nginx_force_override_default_website
+  notify: reload_nginx
+
+
+## specific website
+- name: template conf for "{{ nginx_website_name }}"
+  template: 
+    src: website.conf
+    dest: /etc/nginx/sites-available/{{ nginx_website_name }}.conf
+  notify: reload_nginx
+
+- name: symlink for website
+  file: 
+    src: /etc/nginx/sites-available/{{ nginx_website_name }}.conf
+    dest: /etc/nginx/sites-enabled/{{ nginx_website_name }}.conf
+    state: link
+  notify: reload_nginx

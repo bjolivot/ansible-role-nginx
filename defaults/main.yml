@@ -1,0 +1,14 @@
+---
+# the default site will be overrided only if set to true
+nginx_force_override_default_website: false
+
+#fallback defaults vars
+nginx_fallback_port: 80
+nginx_fallback_server_name: *
+nginx_fallback_root_path: /var/www/fallback
+
+#website default vars:
+nginx_website_port: 80
+
+
+
